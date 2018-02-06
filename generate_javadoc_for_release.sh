@@ -28,10 +28,10 @@ artifacts+="adapter-annotations:1.0.0"
 for artifact in $artifacts; do
     artifact_name=$(echo $artifact | sed 's/:.*//')
     artifact_version=$(echo $artifact | sed 's/.*://')
-    artifact_dir="${artifact_name}-${artifact_version}"
+    branch_name="${artifact_name}-${artifact_version}"
+    artifact_dir="sling-${artifact_name}-${artifact_version}"
     artifact_repo=$(echo $artifact_name | tr '.' '-')
     artifact_repo="sling-${artifact_repo}"
-    branch_name=${artifact_dir}
 
     # - don't document Slingshot sample
     # - threaddump was renamed and tag history is lost
