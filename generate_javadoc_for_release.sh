@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-VERSION=9
+VERSION=10
 WORKDIR=out
 ALLOW_SNAPSHOT=0
 
@@ -14,22 +14,36 @@ if [ -f $WORKDIR/slingfeature.txt ] ; then
     echo "slingfeature.txt already present, not downloading";
 else
     echo "Downloading bundle list for Sling $VERSION"
-    wget https://repo1.maven.org/maven2/org/apache/sling/org.apache.sling.launchpad/$VERSION/org.apache.sling.launchpad-$VERSION-slingfeature.txt -O $WORKDIR/slingfeature.txt
+    wget https://repo1.maven.org/maven2/org/apache/sling/org.apache.sling.starter/$VERSION/org.apache.sling.starter-$VERSION-slingfeature.txt -O $WORKDIR/slingfeature.txt
 fi
 
 # extract <artifactId>-<version> from slingfeature.txt
-artifacts=$(awk -F '/' '/org.apache.sling\// { print $2"-"$3 }' < $WORKDIR/slingfeature.txt)
+artifacts=$(awk -F '/' '/org.apache.sling\// { print $2 ":" $3 }' < $WORKDIR/slingfeature.txt)
 
 # add additional artifacts which are not part of the launchpad
 # https://issues.apache.org/jira/browse/SLING-6766
-artifacts+=" adapter-annotations-1.0.0"
+artifacts+="adapter-annotations:1.0.0"
 
 # checkout tags
 for artifact in $artifacts; do
-    if [ -d $WORKDIR/$artifact ] ; then
-        echo "Not checking out $artifact, already present";
+    artifact_name=$(echo $artifact | sed 's/:.*//')
+    artifact_version=$(echo $artifact | sed 's/.*://')
+    artifact_dir="${artifact_name}-${artifact_version}"
+    artifact_repo=$(echo $artifact_name | tr '.' '-')
+    artifact_repo="sling-${artifact_repo}"
+    branch_name=${artifact_dir}
+
+    # - don't document Slingshot sample
+    # - threaddump was renamed and tag history is lost
+    # - validation core fails on Javadoc aggregation, but does not export anything
+    if [[ ${artifact_name} == *slingshot || ${artifact_name} = "org.apache.sling.extensions.threaddump" || ${artifact_name} == "org.apache.sling.validation.core" ]]; then
+        continue;
+    fi
+
+    if [ -d $WORKDIR/$artifact_dir ] ; then
+        echo "Not checking out $artifact_dir, already present";
     else
-        if [[ "$artifact" == *-SNAPSHOT ]]; then
+        if [[ "$artifact_version" == *-SNAPSHOT ]]; then
             if [ $ALLOW_SNAPSHOT == 0 ] ; then
                 echo "Failing build due to SNAPSHOT artifact $artifact";
                 exit 1;
@@ -38,11 +52,11 @@ for artifact in $artifacts; do
             fi
         fi
         echo "Exporting $artifact from source control"
-        svn export https://svn.apache.org/repos/asf/sling/tags/$artifact $WORKDIR/$artifact
+        git clone https://github.com/apache/${artifact_repo} --branch ${branch_name} ${WORKDIR}/${artifact_dir}
         if [ -f patches/$artifact ]; then
             echo "Applying patch"
-            pushd $WORKDIR/$artifact
-            patch -p0 < ../../patches/$artifact
+            pushd $WORKDIR/$artifact_dir
+            patch -p0 < ../../patches/$artifact_dir
             popd
         fi
     fi
@@ -51,8 +65,9 @@ done
 # generate dummy pom.xml
 
 echo "Generating pom.xml"
+pushd $WORKDIR
 
-POM=$WORKDIR/pom.xml
+POM=pom.xml
 echo "<project>" > $POM
 echo "  <modelVersion>4.0.0</modelVersion>" >> $POM
 echo "  <groupId>org.apache.sling</groupId>" >> $POM
@@ -74,15 +89,13 @@ echo "  </properties>" >> $POM
 echo >> $POM
 echo " <modules> " >> $POM
 
-for artifact in $artifacts; do
-    if [[ "$artifact" == *-SNAPSHOT ]]; then
-        continue
-    fi
-    echo "    <module>$artifact</module>" >> $POM
+for artifact_dir in $(find . -type d -maxdepth 1 -name '*sling*'); do
+    echo "    <module>$artifact_dir</module>" >> $POM
 done
 
 echo "  </modules>" >> $POM
 echo "</project>" >> $POM
+popd
 
 if [ ! -f $WORKDIR/src/main/javadoc/overview.html ] ; then
     echo "Downloading javadoc overview file"
@@ -96,7 +109,7 @@ echo "Starting javadoc generation"
 
 pushd $WORKDIR
 mvn -DexcludePackageNames="*.impl:*.internal:*.jsp:sun.misc:*.juli:*.testservices:*.integrationtest:*.maven:javax.*:org.osgi.*" \
-         org.apache.maven.plugins:maven-javadoc-plugin:2.10.3:aggregate
+         org.apache.maven.plugins:maven-javadoc-plugin:3.0.0:aggregate
 popd
 
 echo "Generated Javadocs can be found in $WORKDIR/target/site/apidocs/"
