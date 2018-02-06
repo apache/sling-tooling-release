@@ -52,7 +52,7 @@ for artifact in $artifacts; do
             fi
         fi
         echo "Exporting $artifact from source control"
-        git clone https://github.com/apache/${artifact_repo} --branch ${branch_name} ${WORKDIR}/${artifact_dir}
+        git -c advice.detachedHead=false clone https://github.com/apache/${artifact_repo} --branch ${branch_name} ${WORKDIR}/${artifact_dir}
         if [ -f patches/$artifact ]; then
             echo "Applying patch"
             pushd $WORKDIR/$artifact_dir
