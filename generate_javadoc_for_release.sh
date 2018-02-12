@@ -22,7 +22,7 @@ artifacts=$(awk -F '/' '/org.apache.sling\// { print $2 ":" $3 }' < $WORKDIR/sli
 
 # add additional artifacts which are not part of the launchpad
 # https://issues.apache.org/jira/browse/SLING-6766
-artifacts+="adapter-annotations:1.0.0"
+artifacts+=" adapter-annotations:1.0.0"
 
 # checkout tags
 for artifact in $artifacts; do
