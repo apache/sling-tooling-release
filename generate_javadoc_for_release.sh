@@ -23,6 +23,7 @@ artifacts=$(awk -F '/' '/org.apache.sling\// { print $2 ":" $3 }' < $WORKDIR/sli
 # add additional artifacts which are not part of the launchpad
 # https://issues.apache.org/jira/browse/SLING-6766
 artifacts+=" adapter-annotations:1.0.0"
+artifacts+="org.apache.sling.servlets.annotations:1.0.0"
 
 # checkout tags
 for artifact in $artifacts; do
@@ -108,6 +109,8 @@ fi
 echo "Starting javadoc generation"
 
 pushd $WORKDIR
+# This might fail due to duplications in the classpath (see https://issues.apache.org/jira/browse/SLING-6766?focusedCommentId=16358298&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-16358298)
+# The classpath order is unfortunately not predictable with m-j-p 3.0.0 (https://issues.apache.org/jira/browse/MJAVADOC-513)
 mvn -DexcludePackageNames="*.impl:*.internal:*.jsp:sun.misc:*.juli:*.testservices:*.integrationtest:*.maven:javax.*:org.osgi.*" \
          org.apache.maven.plugins:maven-javadoc-plugin:3.0.0:aggregate
 popd
