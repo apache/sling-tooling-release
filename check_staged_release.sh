@@ -31,14 +31,25 @@ echo "##########################################################################
 echo "                          CHECK SIGNATURES AND DIGESTS                          "
 echo "################################################################################"
 
-for i in `find "${DOWNLOAD}/${STAGING}" -type f | grep -v '\.\(asc\|sha1\|md5\)$'`
+for i in `find "${DOWNLOAD}/${STAGING}" -type f | grep -v '\.\(asc\|sha1\|md5\|log\)$'`
 do
  f=`echo $i | sed 's/\.asc$//'`
  echo "$f"
- gpg --verify $f.asc 2>/dev/null
- if [ "$?" = "0" ]; then CHKSUM="GOOD"; else CHKSUM="BAD!!!!!!!!"; fi
+ VERIFY_RESULT_FILE="$f.asc.verify-result.log"
+ gpg --verify $f.asc 2> $VERIFY_RESULT_FILE
+ VERIFY_RESULT=$?
+ if grep -q "Can't check signature: No public key" "$VERIFY_RESULT_FILE"; then
+   KEYID=$(cat $VERIFY_RESULT_FILE | tr '\n' ' ' | sed 's/.*using RSA key \([A-Z0-9]\{1,\}\).*/\1/') 
+   KEYSERVER="pool.sks-keyservers.net"
+   echo "Retrieving key $KEYID from $KEYSERVER"
+   gpg --keyserver $KEYSERVER --recv-keys $KEYID
+   echo "Retesting $f.asc"
+   gpg --verify $f.asc 2> $VERIFY_RESULT_FILE
+   VERIFY_RESULT=$?
+ fi
+ if [ "$VERIFY_RESULT" = "0" ]; then CHKSUM="GOOD"; else CHKSUM="BAD!!!!!!!!"; fi
  if [ ! -f "$f.asc" ]; then CHKSUM="----"; fi
- echo "gpg:  ${CHKSUM}"
+ echo "  gpg:  ${CHKSUM}"
 
  for tp in md5 sha1
  do
@@ -50,7 +61,7 @@ do
      B="`openssl $tp < $f 2>/dev/null | sed 's/.*= *//' `"
      if [ "$A" = "$B" ]; then CHKSUM="GOOD (`cat $f.$tp`)"; else CHKSUM="BAD!! : $A not equal to $B"; fi
    fi
-   echo "$tp : ${CHKSUM}"
+   echo "  $tp : ${CHKSUM}"
  done
 
 done
