@@ -31,25 +31,24 @@ echo "##########################################################################
 echo "                          CHECK SIGNATURES AND DIGESTS                          "
 echo "################################################################################"
 
-for i in `find "${DOWNLOAD}/${STAGING}" -type f | grep -v '\.\(asc\|sha1\|md5\|log\)$'`
+KEYSERVER="pool.sks-keyservers.net"
+
+for f in `find "${DOWNLOAD}/${STAGING}" -type f | grep -v '\.\(asc\|sha1\|md5\|log\)$'`
 do
- f=`echo $i | sed 's/\.asc$//'`
  echo "$f"
- VERIFY_RESULT_FILE="$f.asc.verify-result.log"
- gpg --verify $f.asc 2> $VERIFY_RESULT_FILE
- VERIFY_RESULT=$?
- if grep -q "Can't check signature: No public key" "$VERIFY_RESULT_FILE"; then
-   KEYID=$(cat $VERIFY_RESULT_FILE | tr '\n' ' ' | sed 's/.*using RSA key \([A-Z0-9]\{1,\}\).*/\1/') 
-   KEYSERVER="pool.sks-keyservers.net"
-   echo "Retrieving key $KEYID from $KEYSERVER"
-   gpg --keyserver $KEYSERVER --recv-keys $KEYID
-   echo "Retesting $f.asc"
-   gpg --verify $f.asc 2> $VERIFY_RESULT_FILE
-   VERIFY_RESULT=$?
+ if [[ ! "$f" =~ 'maven-metadata.xml' ]]; then
+
+   VERIFY_RESULT_FILE="$f.asc.verify-result.log"
+   gpg --auto-key-retrieve --keyserver $KEYSERVER --verify $f.asc 2> $VERIFY_RESULT_FILE
+   if [ "$?" = "0" ]; then CHKSUM="GOOD"; else 
+      CHKSUM="BAD!!!!!!!!"; 
+      echo "gpg error:"
+      cat $VERIFY_RESULT_FILE 
+   fi
+   if [ ! -f "$f.asc" ]; then CHKSUM="BAD - file $f.asc  missing"; fi
+   echo "  gpg:  ${CHKSUM}"
+
  fi
- if [ "$VERIFY_RESULT" = "0" ]; then CHKSUM="GOOD"; else CHKSUM="BAD!!!!!!!!"; fi
- if [ ! -f "$f.asc" ]; then CHKSUM="----"; fi
- echo "  gpg:  ${CHKSUM}"
 
  for tp in md5 sha1
  do
