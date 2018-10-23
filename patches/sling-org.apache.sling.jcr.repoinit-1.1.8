@@ -1,0 +1,57 @@
+diff --git a/pom.xml b/pom.xml
+index dae9123..b9dadd9 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -107,52 +107,6 @@
+                     </execution>
+                 </executions>
+             </plugin>
+-            <plugin>
+-                <!-- the Sling instance is provisioned from the model in src/main/provisioning/model.txt -->
+-                <groupId>org.apache.sling</groupId>
+-                <artifactId>slingstart-maven-plugin</artifactId>
+-                <version>1.7.16</version>
+-                <extensions>true</extensions>
+-                <executions>
+-                    <execution>
+-                        <id>prepare-launchpad-package</id>
+-                        <phase>pre-integration-test</phase>
+-                        <goals>
+-                            <goal>prepare-package</goal>
+-                        </goals>
+-                    </execution>
+-                    <execution>
+-                        <id>build-launchpad-package</id>
+-                        <phase>pre-integration-test</phase>
+-                        <goals>
+-                            <goal>package</goal>
+-                        </goals>
+-                    </execution>
+-                    <execution>
+-                         <id>start-container-before-IT</id>
+-                        <goals>
+-                            <goal>start</goal>
+-                        </goals>
+-                    </execution>
+-                    <execution>
+-                         <id>stop-container-after-IT</id>
+-                        <goals>
+-                            <goal>stop</goal>
+-                        </goals>
+-                    </execution>
+-                </executions>
+-                <configuration>
+-                    <usePomDependencies>true</usePomDependencies>
+-                    <attachArtifact>false</attachArtifact>
+-                    <servers>
+-                        <server>
+-                            <id>singleinstance</id>
+-                            <port>${http.port}</port>
+-                            <vmOpts>${sling.vm.options}</vmOpts>
+-                        </server>
+-                    </servers>
+-                </configuration>
+-            </plugin>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-failsafe-plugin</artifactId>
