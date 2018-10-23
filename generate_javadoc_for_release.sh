@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-VERSION=10
+VERSION=11
 WORKDIR=out
 ALLOW_SNAPSHOT=0
 
