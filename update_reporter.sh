@@ -4,7 +4,13 @@ function display_usage() {
     echo "$0 <path_to_file_containing_release_names>"
 }
 
-source update_reporter.config
+if [[ -f ~/.config/update_reporter.config ]]; then
+    source ~/.config/update_reporter.config
+else
+    echo "Please provide a configuration file at ~/.config/update_reporter.config. A sample file is provided in this repository."
+    exit 1
+fi
+
 if [[ -z "${APACHE_USER}" ]]; then
     echo "Please set the APACHE_USER variable in the update_reporter.config file."
     exit 1
