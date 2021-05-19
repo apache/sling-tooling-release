@@ -31,7 +31,7 @@ echo "##########################################################################
 echo "                          CHECK SIGNATURES AND DIGESTS                          "
 echo "################################################################################"
 
-for i in `find "${DOWNLOAD}/${STAGING}" -type f | grep -v '\.\(asc\|sha1\|md5\)$'`
+for i in `find "${DOWNLOAD}/${STAGING}" -type f | grep -v '\.\(asc\|sha1\|md5\|sha512\)$'`
 do
  f=`echo $i | sed 's/\.asc$//'`
  echo "$f"
@@ -40,7 +40,7 @@ do
  if [ ! -f "$f.asc" ]; then CHKSUM="----"; fi
  echo "gpg:  ${CHKSUM}"
 
- for tp in md5 sha1
+ for tp in md5 sha1 sha512
  do
    if [ ! -f "$f.$tp" ]
    then
