@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-VERSION=11
+VERSION=12
 WORKDIR=out
 ALLOW_SNAPSHOT=0
 
@@ -10,15 +10,15 @@ if [ ! -d $WORKDIR ] ; then
 fi
 
 # get bundle list
-if [ -f $WORKDIR/slingfeature.txt ] ; then
-    echo "slingfeature.txt already present, not downloading";
+if [ -f $WORKDIR/feature.json ] ; then
+    echo "feature.json already present, not downloading";
 else
-    echo "Downloading bundle list for Sling $VERSION"
-    wget https://repo1.maven.org/maven2/org/apache/sling/org.apache.sling.starter/$VERSION/org.apache.sling.starter-$VERSION-slingfeature.txt -O $WORKDIR/slingfeature.txt
+    echo "Downloading bundle list for Sling $VERSION (oak-tar variant)"
+    wget  https://repo1.maven.org/maven2/org/apache/sling/org.apache.sling.starter/$VERSION/org.apache.sling.starter-$VERSION-oak_tar.slingosgifeature -O $WORKDIR/feature.json
 fi
 
-# extract <artifactId>-<version> from slingfeature.txt
-artifacts=$(awk -F '/' '/org.apache.sling\// { print $2 ":" $3 }' < $WORKDIR/slingfeature.txt)
+# extract <artifactId>-<version> from feature file
+artifacts=$(cat $WORKDIR/feature.json | jq -r '.bundles[].id | select(startswith("org.apache.sling"))' | awk -F ':' '{ print $2 ":" $3 }')
 
 # add additional artifacts which are not part of the launchpad
 # https://issues.apache.org/jira/browse/SLING-6766
