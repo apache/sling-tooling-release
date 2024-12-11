@@ -34,10 +34,9 @@ for artifact in $artifacts; do
     artifact_repo=$(echo $artifact_name | tr '.' '-')
     artifact_repo="sling-${artifact_repo}"
 
-    # - don't document Slingshot sample
+    # - don't document Slingshot sample or Sling Starter Content
     # - threaddump was renamed and tag history is lost
-    # - validation core fails on Javadoc aggregation, but does not export anything
-    if [[ ${artifact_name} == *slingshot || ${artifact_name} = "org.apache.sling.extensions.threaddump" || ${artifact_name} == "org.apache.sling.validation.core" ]]; then
+    if [[ ${artifact_name} == *slingshot || ${artifact_name} == "org.apache.sling.starter.content" || ${artifact_name} = "org.apache.sling.extensions.threaddump" ]]; then
         continue;
     fi
 
