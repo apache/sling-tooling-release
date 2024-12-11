@@ -22,8 +22,8 @@ artifacts=$(cat $WORKDIR/feature.json | jq -r '.bundles[].id | select(startswith
 
 # add additional artifacts which are not part of the launchpad
 # https://issues.apache.org/jira/browse/SLING-6766
-artifacts+=" adapter-annotations:1.0.0"
-artifacts+=" org.apache.sling.servlets.annotations:1.1.0"
+artifacts+=" org.apache.sling.adapter.annotations:2.0.0"
+artifacts+=" org.apache.sling.servlets.annotations:1.2.6"
 
 # checkout tags
 for artifact in $artifacts; do
@@ -79,7 +79,7 @@ echo >> $POM
 echo "  <parent>" >> $POM
 echo "    <groupId>org.apache</groupId>" >> $POM
 echo "    <artifactId>apache</artifactId>" >> $POM
-echo "    <version>8</version>" >> $POM
+echo "    <version>33</version>" >> $POM
 echo "  </parent>" >> $POM
 echo >> $POM
 echo "  <name>Apache Sling</name>" >> $POM
