@@ -27,8 +27,8 @@ artifacts+=" org.apache.sling.servlets.annotations:1.1.0"
 
 # checkout tags
 for artifact in $artifacts; do
-    artifact_name=$(echo "$artifact" | sed 's/:.*//')
-    artifact_version=$(echo "$artifact" | sed 's/.*://')
+    artifact_name="${artifact%%:*}"
+    artifact_version="${artifact##*:}"
     branch_name="${artifact_name}-${artifact_version}"
     artifact_dir="sling-${artifact_name}-${artifact_version}"
     artifact_repo=$(echo "$artifact_name" | tr '.' '-')
