@@ -86,6 +86,7 @@ echo "  <name>Apache Sling</name>" >> $POM
 echo >> $POM
 echo "  <properties>" >> $POM
 echo "    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>" >> $POM
+echo "    <maven.compiler.target>11</maven.compiler.target>" >> $POM
 echo "  </properties>" >> $POM
 echo >> $POM
 echo " <modules> " >> $POM
@@ -110,7 +111,7 @@ echo "Starting javadoc generation"
 
 pushd $WORKDIR
 mvn -DexcludePackageNames="*.impl:*.internal:*.jsp:sun.misc:*.juli:*.testservices:*.integrationtest:*.maven:javax.*:org.osgi.*" \
-         org.apache.maven.plugins:maven-javadoc-plugin:3.11.2:aggregate -Dnotimestamp=true -Dignore.javadocjdk=true
+         org.apache.maven.plugins:maven-javadoc-plugin:3.11.2:aggregate -Dnotimestamp=true -Dignore.javadocjdk=true -Ddoclint=none
 popd
 
 echo "Generated Javadocs can be found in $WORKDIR/target/site/apidocs/"
