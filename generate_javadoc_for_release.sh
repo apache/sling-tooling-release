@@ -101,7 +101,7 @@ popd
 if [ ! -f $WORKDIR/src/main/javadoc/overview.html ] ; then
     echo "Downloading javadoc overview file"
     mkdir -p $WORKDIR/src/main/javadoc
-    wget https://svn.apache.org/repos/asf/sling/trunk/src/main/javadoc/overview.html -O $WORKDIR/src/main/javadoc/overview.html
+    cp javadoc/overview.html $WORKDIR/src/main/javadoc/overview.html
 fi
 
 # generate javadoc
