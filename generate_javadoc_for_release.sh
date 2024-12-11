@@ -27,11 +27,11 @@ artifacts+=" org.apache.sling.servlets.annotations:1.1.0"
 
 # checkout tags
 for artifact in $artifacts; do
-    artifact_name=$(echo $artifact | sed 's/:.*//')
-    artifact_version=$(echo $artifact | sed 's/.*://')
+    artifact_name=$(echo "$artifact" | sed 's/:.*//')
+    artifact_version=$(echo "$artifact" | sed 's/.*://')
     branch_name="${artifact_name}-${artifact_version}"
     artifact_dir="sling-${artifact_name}-${artifact_version}"
-    artifact_repo=$(echo $artifact_name | tr '.' '-')
+    artifact_repo=$(echo "$artifact_name" | tr '.' '-')
     artifact_repo="sling-${artifact_repo}"
 
     # - don't document Slingshot sample
@@ -41,7 +41,7 @@ for artifact in $artifacts; do
         continue;
     fi
 
-    if [ -d $WORKDIR/$artifact_dir ] ; then
+    if [ -d $WORKDIR/"$artifact_dir" ] ; then
         echo "Not checking out $artifact_dir, already present";
     else
         if [[ "$artifact_version" == *-SNAPSHOT ]]; then
@@ -53,11 +53,11 @@ for artifact in $artifacts; do
             fi
         fi
         echo "Exporting $artifact from source control"
-        git -c advice.detachedHead=false clone https://github.com/apache/${artifact_repo} --branch ${branch_name} ${WORKDIR}/${artifact_dir}
-        if [ -f patches/$artifact ]; then
+        git -c advice.detachedHead=false clone https://github.com/apache/"${artifact_repo}" --branch "${branch_name}" ${WORKDIR}/"${artifact_dir}"
+        if [ -f patches/"$artifact" ]; then
             echo "Applying patch"
-            pushd $WORKDIR/$artifact_dir
-            patch -p0 < ../../patches/$artifact_dir
+            pushd $WORKDIR/"$artifact_dir"
+            patch -p0 < ../../patches/"$artifact_dir"
             popd
         fi
     fi
