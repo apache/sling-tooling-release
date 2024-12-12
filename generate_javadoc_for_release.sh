@@ -22,8 +22,8 @@ artifacts=$(cat $WORKDIR/feature.json | jq -r '.bundles[].id | select(startswith
 
 # add additional artifacts which are not part of the launchpad
 # https://issues.apache.org/jira/browse/SLING-6766
-artifacts+=" adapter-annotations:1.0.0"
-artifacts+=" org.apache.sling.servlets.annotations:1.1.0"
+artifacts+=" org.apache.sling.adapter.annotations:2.0.0"
+artifacts+=" org.apache.sling.servlets.annotations:1.2.6"
 
 # checkout tags
 for artifact in $artifacts; do
@@ -34,10 +34,9 @@ for artifact in $artifacts; do
     artifact_repo=$(echo $artifact_name | tr '.' '-')
     artifact_repo="sling-${artifact_repo}"
 
-    # - don't document Slingshot sample
+    # - don't document Slingshot sample or Sling Starter Content
     # - threaddump was renamed and tag history is lost
-    # - validation core fails on Javadoc aggregation, but does not export anything
-    if [[ ${artifact_name} == *slingshot || ${artifact_name} = "org.apache.sling.extensions.threaddump" || ${artifact_name} == "org.apache.sling.validation.core" ]]; then
+    if [[ ${artifact_name} == *slingshot || ${artifact_name} == "org.apache.sling.starter.content" || ${artifact_name} = "org.apache.sling.extensions.threaddump" ]]; then
         continue;
     fi
 
@@ -79,13 +78,14 @@ echo >> $POM
 echo "  <parent>" >> $POM
 echo "    <groupId>org.apache</groupId>" >> $POM
 echo "    <artifactId>apache</artifactId>" >> $POM
-echo "    <version>8</version>" >> $POM
+echo "    <version>33</version>" >> $POM
 echo "  </parent>" >> $POM
 echo >> $POM
 echo "  <name>Apache Sling</name>" >> $POM
 echo >> $POM
 echo "  <properties>" >> $POM
 echo "    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>" >> $POM
+echo "    <maven.compiler.target>11</maven.compiler.target>" >> $POM
 echo "  </properties>" >> $POM
 echo >> $POM
 echo " <modules> " >> $POM
@@ -101,7 +101,7 @@ popd
 if [ ! -f $WORKDIR/src/main/javadoc/overview.html ] ; then
     echo "Downloading javadoc overview file"
     mkdir -p $WORKDIR/src/main/javadoc
-    wget https://svn.apache.org/repos/asf/sling/trunk/src/main/javadoc/overview.html -O $WORKDIR/src/main/javadoc/overview.html
+    cp javadoc/overview.html $WORKDIR/src/main/javadoc/overview.html
 fi
 
 # generate javadoc
@@ -109,10 +109,8 @@ fi
 echo "Starting javadoc generation"
 
 pushd $WORKDIR
-# This might fail due to duplications in the classpath (see https://issues.apache.org/jira/browse/SLING-6766?focusedCommentId=16358298&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-16358298)
-# The classpath order is unfortunately not predictable with m-j-p 3.0.0 (https://issues.apache.org/jira/browse/MJAVADOC-513)
 mvn -DexcludePackageNames="*.impl:*.internal:*.jsp:sun.misc:*.juli:*.testservices:*.integrationtest:*.maven:javax.*:org.osgi.*" \
-         org.apache.maven.plugins:maven-javadoc-plugin:3.0.0:aggregate -Dnotimestamp=true -Dignore.javadocjdk=true
+         org.apache.maven.plugins:maven-javadoc-plugin:3.11.2:aggregate -Dnotimestamp=true -Dignore.javadocjdk=true -Ddoclint=none
 popd
 
 echo "Generated Javadocs can be found in $WORKDIR/target/site/apidocs/"
