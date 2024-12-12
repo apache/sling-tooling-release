@@ -36,7 +36,12 @@ for artifact in $artifacts; do
 
     # - don't document Slingshot sample or Sling Starter Content
     # - threaddump was renamed and tag history is lost
-    if [[ ${artifact_name} == *slingshot || ${artifact_name} == "org.apache.sling.starter.content" || ${artifact_name} = "org.apache.sling.extensions.threaddump" ]]; then
+    # - exclude deprecated Sling Health Check bundles, which are only present for integration test of the support bundle
+    if [[ ${artifact_name} == *slingshot
+        || ${artifact_name} == "org.apache.sling.starter.content"
+        || ${artifact_name} = "org.apache.sling.extensions.threaddump" 
+        || ${artifact_name} = "org.apache.sling.hc.api" 
+        || ${artifact_name} = "org.apache.sling.hc.support" ]]; then
         continue;
     fi
 
