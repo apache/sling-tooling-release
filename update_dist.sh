@@ -41,14 +41,14 @@ else
     done
     pushd apache-dist > /dev/null
     echo "Importing ${ARTIFACT_ID}-${NEW_VERSION} to Apache dist"
-    svn import -m "Release ${ARTIFACT}-${NEW_VERSION}" . https://dist.apache.org/repos/dist/release/sling
+    svn import -m "Release ${ARTIFACT_ID}-${NEW_VERSION}" . https://dist.apache.org/repos/dist/release/sling
     echo "Preparing to remove previous version ${ARTIFACT_ID}-${OLD_VERSION}"
     OLD_ARTIFACTS=$(svn ls https://dist.apache.org/repos/dist/release/sling/ | grep "${ARTIFACT_ID}-${OLD_VERSION}" | while read line; do echo "https://dist.apache.org/repos/dist/release/sling/$line"; done)
     if [[ -z "${OLD_ARTIFACTS}" ]]; then
         echo "Error: No ${ARTIFACT_ID}-${OLD_VERSION} files found in Apache dist"
         exit 1
     else
-        svn delete -m "Remove old version ${ARTIFACT}-${OLD_VERSION}" ${OLD_ARTIFACTS}
+        svn delete -m "Remove old version ${ARTIFACT_ID}-${OLD_VERSION}" ${OLD_ARTIFACTS}
     fi
     popd > /dev/null
 fi
