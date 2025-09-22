@@ -4,6 +4,16 @@ STAGING=${1}
 DOWNLOAD=${2:-/tmp/sling-staging}
 mkdir ${DOWNLOAD} 2>/dev/null
 
+# Check if this is an Eclipse release and set repository URL accordingly
+if echo "${STAGING}" | grep -q "^eclipse-"; then
+    ECLIPSE_VERSION=$(echo "${STAGING}" | sed 's/^eclipse-//')
+    REPO_URL="https://dist.apache.org/repos/dist/dev/sling/ide-tooling/${ECLIPSE_VERSION}/"
+    CUT_DIRS=4
+else
+    REPO_URL="https://repository.apache.org/content/repositories/orgapachesling-${STAGING}/org/apache/sling/"
+    CUT_DIRS=3
+fi
+
 if [ -z "${STAGING}" -o ! -d "${DOWNLOAD}" ]
 then
  echo "Usage: check_staged_release.sh <staging-number> [temp-directory]"
@@ -17,8 +27,8 @@ then
  echo "################################################################################"
 
  wget -e "robots=off" --wait 1 -nv -r -np "--reject=html,index.html.tmp" "--follow-tags=" \
-  -P "${DOWNLOAD}/${STAGING}" -nH "--cut-dirs=3" \
-  "https://repository.apache.org/content/repositories/orgapachesling-${STAGING}/org/apache/sling/"
+  -P "${DOWNLOAD}/${STAGING}" -nH "--cut-dirs=${CUT_DIRS}" \
+  "${REPO_URL}"
 
 else
  echo "################################################################################"
