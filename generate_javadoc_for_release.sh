@@ -46,7 +46,7 @@ else
 fi
 
 # extract <artifactId>-<version> from feature file
-artifacts=$(cat $WORKDIR/feature.json | jq -r '.bundles[].id | select(startswith("org.apache.sling"))' | awk -F ':' '{ print $2 ":" $3 }')
+artifacts=$(cat $WORKDIR/feature.json | jq -r '.bundles[].id | select(startswith("org.apache.sling"))' | awk -F ':' '{ print $2 ":" $NF }')
 
 # add additional artifacts which are not part of the launchpad
 # https://issues.apache.org/jira/browse/SLING-6766
@@ -55,8 +55,8 @@ artifacts+=" org.apache.sling.servlets.annotations:1.2.6"
 
 # checkout tags
 for artifact in $artifacts; do
-    artifact_name=$(echo $artifact | sed 's/:.*//')
-    artifact_version=$(echo $artifact | sed 's/.*://')
+    artifact_name=$(echo $artifact | awk -F ':' '{ print $1 }')
+    artifact_version=$(echo $artifact | awk -F ':' '{ print $2 }')
     branch_name="${artifact_name}-${artifact_version}"
     artifact_dir="sling-${artifact_name}-${artifact_version}"
     artifact_repo=$(echo $artifact_name | tr '.' '-')
