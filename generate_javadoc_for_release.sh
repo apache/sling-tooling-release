@@ -1,5 +1,13 @@
 #!/bin/bash -e
 
+## How to use this script:
+## 1. Adjust the VERSION variable below to the desired Sling release version
+## 2. Run this script
+##
+## Important: This script creates and "out" folder with a "feature.json" with the bundle list and the checked out folders.
+## This folder is not deleted on subsequent runs to avoid re-downloading everything.
+## If you want to re-generate everything, please delete the "out" folder first.
+
 VERSION=14-SNAPSHOT
 WORKDIR=out
 ALLOW_SNAPSHOT=0
