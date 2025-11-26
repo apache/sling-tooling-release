@@ -118,7 +118,7 @@ echo "  <name>Apache Sling</name>" >> $POM
 echo >> $POM
 echo "  <properties>" >> $POM
 echo "    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>" >> $POM
-echo "    <maven.compiler.target>11</maven.compiler.target>" >> $POM
+echo "    <maven.compiler.target>21</maven.compiler.target>" >> $POM
 echo "  </properties>" >> $POM
 echo >> $POM
 echo " <modules> " >> $POM
@@ -142,7 +142,7 @@ fi
 echo "Starting javadoc generation"
 
 pushd $WORKDIR
-mvn -DexcludePackageNames="*.impl:*.internal:*.jsp:sun.misc:*.juli:*.testservices:*.integrationtest:*.maven:javax.*:org.osgi.*" \
+mvn -DexcludePackageNames="*.impl:*.impl.*:*.internal:*.internal.*:*.jsp:sun.misc:*.juli:*.testservices:*.integrationtest:*.maven:javax.*:jakarta.*:org.osgi.*:org.owasp.*:org.quartz.*" \
          org.apache.maven.plugins:maven-javadoc-plugin:3.12.0:aggregate -Dnotimestamp=true -Dignore.javadocjdk=true -Ddoclint=none
 popd
 
