@@ -142,7 +142,7 @@ fi
 echo "Starting javadoc generation"
 
 pushd $WORKDIR
-mvn -DexcludePackageNames="*.impl:*.impl.*:*.internal:*.internal.*:*.jsp:sun.misc:*.juli:*.testservices:*.integrationtest:*.maven:javax.*:jakarta.*:org.osgi.*:org.owasp.*:org.quartz.*" \
+mvn -DexcludePackageNames="*.impl:*.impl.*:*.internal:*.internal.*:*.jsp:sun.misc:org.apache.juli:org.apache.juli.*:*.testservices:*.integrationtest:*.maven:javax.*:jakarta.*:org.osgi.*:org.owasp.*:org.quartz.*" \
          org.apache.maven.plugins:maven-javadoc-plugin:3.12.0:aggregate -Dnotimestamp=true -Dignore.javadocjdk=true -Ddoclint=none
 popd
 
