@@ -111,7 +111,7 @@ echo >> $POM
 echo "  <parent>" >> $POM
 echo "    <groupId>org.apache</groupId>" >> $POM
 echo "    <artifactId>apache</artifactId>" >> $POM
-echo "    <version>33</version>" >> $POM
+echo "    <version>35</version>" >> $POM
 echo "  </parent>" >> $POM
 echo >> $POM
 echo "  <name>Apache Sling</name>" >> $POM
@@ -143,7 +143,7 @@ echo "Starting javadoc generation"
 
 pushd $WORKDIR
 mvn -DexcludePackageNames="*.impl:*.internal:*.jsp:sun.misc:*.juli:*.testservices:*.integrationtest:*.maven:javax.*:org.osgi.*" \
-         org.apache.maven.plugins:maven-javadoc-plugin:3.11.2:aggregate -Dnotimestamp=true -Dignore.javadocjdk=true -Ddoclint=none
+         org.apache.maven.plugins:maven-javadoc-plugin:3.12.0:aggregate -Dnotimestamp=true -Dignore.javadocjdk=true -Ddoclint=none
 popd
 
 echo "Generated Javadocs can be found in $WORKDIR/target/site/apidocs/"
