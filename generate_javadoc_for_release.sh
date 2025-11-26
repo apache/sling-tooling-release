@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-VERSION=12
+VERSION=14-SNAPSHOT
 WORKDIR=out
 ALLOW_SNAPSHOT=0
 
@@ -13,8 +13,28 @@ fi
 if [ -f $WORKDIR/feature.json ] ; then
     echo "feature.json already present, not downloading";
 else
-    echo "Downloading bundle list for Sling $VERSION (oak-tar variant)"
-    wget  https://repo1.maven.org/maven2/org/apache/sling/org.apache.sling.starter/$VERSION/org.apache.sling.starter-$VERSION-oak_tar.slingosgifeature -O $WORKDIR/feature.json
+    if [[ $VERSION == *-SNAPSHOT ]]; then
+        echo "Detecting latest snapshot version (buildNumber/timestamp)"
+        BASE_VERSION=$(echo $VERSION | sed 's/-SNAPSHOT//')
+        METADATA_URL="https://repository.apache.org/content/groups/snapshots/org/apache/sling/org.apache.sling.starter/$VERSION/maven-metadata.xml"
+        
+        # Download maven-metadata.xml to extract timestamp and buildNumber
+        wget -q $METADATA_URL -O $WORKDIR/maven-metadata.xml
+        
+        # Extract timestamp and buildNumber from maven-metadata.xml
+        TIMESTAMP=$(grep -oP '(?<=<timestamp>)[^<]+' $WORKDIR/maven-metadata.xml | head -1)
+        BUILDNUMBER=$(grep -oP '(?<=<buildNumber>)[^<]+' $WORKDIR/maven-metadata.xml | head -1)
+        
+        # Construct the snapshot filename
+        SNAPSHOT_VERSION="${BASE_VERSION}-${TIMESTAMP}-${BUILDNUMBER}"
+        SNAPSHOT_URL="https://repository.apache.org/content/groups/snapshots/org/apache/sling/org.apache.sling.starter/$VERSION/org.apache.sling.starter-${SNAPSHOT_VERSION}-oak_tar.slingosgifeature"
+        
+        echo "Downloading bundle list for Sling $SNAPSHOT_VERSION (oak-tar variant)"
+        wget $SNAPSHOT_URL -O $WORKDIR/feature.json
+    else
+        echo "Downloading bundle list for Sling $VERSION (oak-tar variant)"
+        wget https://repo1.maven.org/maven2/org/apache/sling/org.apache.sling.starter/$VERSION/org.apache.sling.starter-$VERSION-oak_tar.slingosgifeature -O $WORKDIR/feature.json
+    fi
 fi
 
 # extract <artifactId>-<version> from feature file
