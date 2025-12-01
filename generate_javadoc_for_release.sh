@@ -50,7 +50,7 @@ artifacts=$(cat $WORKDIR/feature.json | jq -r '.bundles[].id | select(startswith
 
 # add additional artifacts which are not part of the launchpad
 # https://issues.apache.org/jira/browse/SLING-6766
-artifacts+=" org.apache.sling.adapter.annotations:2.0.0"
+artifacts+=" org.apache.sling.adapter.annotations:2.0.2"
 artifacts+=" org.apache.sling.servlets.annotations:1.2.6"
 
 # checkout tags
