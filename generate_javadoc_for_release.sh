@@ -8,7 +8,7 @@
 ## This folder is not deleted on subsequent runs to avoid re-downloading everything.
 ## If you want to re-generate everything, please delete the "out" folder first.
 
-VERSION=14-SNAPSHOT
+VERSION=14
 WORKDIR=out
 ALLOW_SNAPSHOT=0
 
